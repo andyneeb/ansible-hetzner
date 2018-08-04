@@ -9,6 +9,8 @@
     - ssh-rsa AAAA ... # your hetzner authorized key
     hetzner_webservice_username: "your_hetzner_webservice_user"
     hetzner_webservice_password: "your_hetzner_webservice_password"
+    hetzner_image: "/root/.oldroot/nfs/install/../images/CentOS-75-64-minimal.tar.gz"
+    hetzner_hostname: "hostname.example.com"
 
   tasks:
   - import_role:

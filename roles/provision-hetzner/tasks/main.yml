@@ -71,7 +71,7 @@
   connection: local
 
 - name: Copy autosetup configuration file
-  copy:
+  template:
     src: "{{ hetzner_autosetup_file }}"
     dest: /autosetup
     owner: root
@@ -82,7 +82,6 @@
   command: /root/.oldroot/nfs/install/installimage
   ignore_errors: true
   register: result
-
 
 - name: Reboot server
   shell: sleep 2 && shutdown -r now
