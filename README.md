@@ -8,7 +8,7 @@ Notes
 Platforms
 ---------
 
-Tested on Ubuntu. Should work on all platforms.
+Tested on RHEL / CentOS. Should work on all platforms.
 
 Example playbook
 ----------------
