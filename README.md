@@ -25,6 +25,8 @@ Example playbook
     - ssh-rsa AAAA ... # your hetzner authorized key
     hetzner_webservice_username: "your_hetzner_webservice_user"
     hetzner_webservice_password: "your_hetzner_webservice_password"
+    hetzner_image: "/root/.oldroot/nfs/install/../images/CentOS-75-64-minimal.tar.gz"
+    hetzner_hostname: "hostname.example.com"
 
   tasks:
   - import_role:
@@ -44,7 +46,7 @@ DRIVE2 /dev/sdb
 SWRAID 1
 SWRAIDLEVEL 0
 BOOTLOADER grub
-HOSTNAME hetzner.andyneeb.com
+HOSTNAME {{ hetzner_hostname }}
 PART /boot ext3 512M
 PART lvm vg0 500G
 PART lvm cinder-volumes all
@@ -52,6 +54,5 @@ PART lvm cinder-volumes all
 LV vg0 root / ext4 100G
 LV vg0 swap swap swap 5G
 
-IMAGE http://boernig.de/CentOS-75-el-x86_64-minimal.tar.xz
-
+IMAGE {{ hetzner_image }}
 ```
