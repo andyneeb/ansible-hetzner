@@ -1,0 +1,114 @@
+---
+- name: Set ansible variables
+  include_vars: vars/main.yml
+
+- name: Retrieve first public key fingerprint 
+  uri:
+    url: https://robot-ws.your-server.de/key
+    return_content: yes
+    method: GET
+    user: "{{ hetzner_webservice_username }}"
+    password: "{{ hetzner_webservice_password }}"
+    force_basic_auth: yes
+    status_code: 200
+  register: key
+  delegate_to: localhost
+
+- name: Set authorized_key fact
+  set_fact:
+    authorized_key: "{{ key.json[0].key.fingerprint }}"
+
+- name: Check rescue mode
+  uri:
+    url: "https://robot-ws.your-server.de/boot/{{ inventory_hostname }}/rescue"
+    method: GET
+    user: "{{ hetzner_webservice_username }}"
+    password: "{{ hetzner_webservice_password }}"
+    force_basic_auth: yes
+    status_code: 200
+  register: rescue
+  delegate_to: localhost
+
+- name: Activate rescue mode
+  when:  rescue.json.rescue.active == false
+  uri:
+    url: "https://robot-ws.your-server.de/boot/{{ inventory_hostname }}/rescue"
+    method: POST
+    user: "{{ hetzner_webservice_username }}"
+    password: "{{ hetzner_webservice_password }}"
+    force_basic_auth: yes
+    body: "os=linux&arch=64&authorized_key={{ authorized_key }}"
+    status_code: 200
+    HEADER_Content-Type: "application/x-www-form-urlencoded"
+  register: activated
+  delegate_to: localhost
+
+- name: Execute hardware reset
+  uri:
+    url: "https://robot-ws.your-server.de/reset/{{ inventory_hostname }}"
+    method: POST
+    user: "{{ hetzner_webservice_username }}"
+    password: "{{ hetzner_webservice_password }}"
+    force_basic_auth: yes
+    body: "type=hw"
+    status_code: 200
+    HEADER_Content-Type: "application/x-www-form-urlencoded"
+  delegate_to: localhost
+
+- name: Remove server from local known_hosts file
+  local_action: command  /usr/bin/ssh-keygen -R {{ inventory_hostname }}
+  ignore_errors: yes
+
+- name: Pause a bit for the hardware reset to kick in
+  pause: seconds=15
+
+- name: Wait 300 seconds for port 22 to become open
+  wait_for:
+    port: 22
+    host: '{{ inventory_hostname }}'
+    delay: 10
+    timeout: 300
+  connection: local
+
+- name: Copy autosetup configuration file
+  copy:
+    src: "{{ hetzner_autosetup_file }}"
+    dest: /autosetup
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Run installimage 
+  command: /root/.oldroot/nfs/install/installimage
+  ignore_errors: true
+  register: result
+
+
+- name: Reboot server
+  shell: sleep 2 && shutdown -r now
+  async: 1
+  poll: 0
+  ignore_errors: yes
+
+- name: Remove server from local known_hosts file
+  local_action: command  /usr/bin/ssh-keygen -R {{ inventory_hostname }}
+  ignore_errors: yes
+
+- name: Wait 300 seconds for port 22 to become open
+  wait_for:
+    port: 22
+    host: '{{ inventory_hostname }}'
+    delay: 10
+    timeout: 300
+  connection: local
+
+- name: Disable password authentication
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^PasswordAuthentication yes'
+    line: 'PasswordAuthentication no'
+
+- name: Restart sshd
+  systemd:
+    name: sshd.service
+    state: restarted
