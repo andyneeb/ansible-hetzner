@@ -39,7 +39,8 @@
     force_basic_auth: yes
     body: "os=linux&arch=64&authorized_key={{ authorized_key }}"
     status_code: 200
-    HEADER_Content-Type: "application/x-www-form-urlencoded"
+    headers:
+      Content_Type: "application/x-www-form-urlencoded"
   register: activated
   delegate_to: localhost
 
@@ -52,7 +53,8 @@
     force_basic_auth: yes
     body: "type=hw"
     status_code: 200
-    HEADER_Content-Type: "application/x-www-form-urlencoded"
+    headers:
+      Content-Type: "application/x-www-form-urlencoded"
   delegate_to: localhost
 
 - name: Remove server from local known_hosts file
@@ -77,6 +79,16 @@
     owner: root
     group: root
     mode: 0644
+
+#FIXME: This isn't working because of ready only FS
+#- name: Fix Hetzner for usage of RHEL image
+#  lineinfile:
+#    path: /root/.oldroot/nfs/install/centos.sh
+#    regexp: "{{ item }}"
+#    state: absent
+#  with_items:
+#    - yum check-update
+#    - yum -y install polkit
 
 - name: Run installimage 
   command: /root/.oldroot/nfs/install/installimage
