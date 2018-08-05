@@ -10,7 +10,7 @@ Platforms
 
 Tested on RHEL / CentOS. Should work on all platforms.
 
-Activate Webservice
+Activate webservice
 -------------------
 
 To use the webservice, go to ``Settings > Webservice settings`` in portal and define a password. You will receive your user via Mail from Hetzner.
