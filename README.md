@@ -3,7 +3,7 @@
 Notes
 -----
 
-**Caution when using. Systems are installed without further inquiry.**
+**Caution when using. Systems are rebooted and installed without further inquiry.**
 
 Platforms
 ---------
@@ -34,8 +34,8 @@ Example playbook
 Example autosetup file
 ----------------------
 
-The following ``autosetup`` file  will be used by default. Further details regarding
-the file can be found at [Hetzner in the wiki](https://wiki.hetzner.de/index.php/Installimage/en#autosetup).
+The following ``autosetup`` file  will be used by default. Modify ``roles/provision-hetzner/templates/autosetup`` or create your own and set ``{{ hetzner_autosetup_file }}``.
+ Further details regarding the file can be found at [Hetzner in the wiki](https://wiki.hetzner.de/index.php/Installimage/en#autosetup).
 
 ```
 DRIVE1 /dev/sda
