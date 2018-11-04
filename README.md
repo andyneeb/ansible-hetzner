@@ -71,6 +71,8 @@ Hetzner offers a collection of images which can be set via ``{{ hetzner_image }}
 * Ubuntu-1710-artful-64-minimal.tar.gz
 * Ubuntu-1804-bionic-64-minimal.tar.gz
 
+You can alos build a custom image and host it on a public webserver. In that case {{ hetzner_image }} needs to point to that location.
+
 License
 -------
 
