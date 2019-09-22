@@ -1,0 +1,14 @@
+DRIVE1 /dev/nvme0n1
+DRIVE2 /dev/nvme1n1
+SWRAID 1
+SWRAIDLEVEL 0
+BOOTLOADER grub
+HOSTNAME {{ hetzner_hostname }}
+PART /boot ext3 512M
+PART lvm vg0 120G
+PART lvm cinder-volumes all
+
+LV vg0 root / ext4 100G
+LV vg0 swap swap swap 5G
+
+IMAGE {{ hetzner_image }}

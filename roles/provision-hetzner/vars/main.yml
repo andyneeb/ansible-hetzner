@@ -1,6 +1,6 @@
 ---
 
-hetzner_autosetup_file: autosetup
+# hetzner_autosetup_file: autosetup
 
 # hetzner_webservice_username: 
 # hetzner_webservice_password:
